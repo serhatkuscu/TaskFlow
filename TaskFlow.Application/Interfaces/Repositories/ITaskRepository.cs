@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using TaskFlow.Domain.Entities;
 
-namespace TaskFlow.Application.Interfaces.Repositories
+namespace TaskFlow.Application.Interfaces.Repositories;
+
+public interface ITaskRepository
 {
-    internal class ITaskRepository
-    {
-    }
+    Task AddAsync(TaskItem task);
 }
