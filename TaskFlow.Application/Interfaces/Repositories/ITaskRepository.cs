@@ -5,4 +5,5 @@ namespace TaskFlow.Application.Interfaces.Repositories;
 public interface ITaskRepository
 {
     Task AddAsync(TaskItem task);
+    Task<List<TaskItem>> GetAllAsync();
 }
