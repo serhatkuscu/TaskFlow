@@ -15,7 +15,7 @@ public class CreateTaskHandler
 
     public async Task HandleAsync(CreateTaskRequest request)
     {
-        var task = new TaskItem(request.Title, request.Description);
+        var task = new TaskItem(request.Title, request.Description); // deneme
 
         await _taskRepository.AddAsync(task);
     }
