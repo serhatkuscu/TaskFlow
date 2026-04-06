@@ -34,6 +34,27 @@ public class TaskFlowDbContext : DbContext
             entity.Property(x => x.Status)
                   .IsRequired();
         });
+
+        modelBuilder.Entity<AppUser>(entity =>
+        {
+            entity.ToTable("Users");
+
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Username)
+                  .IsRequired()
+                  .HasMaxLength(100);
+
+            entity.HasIndex(x => x.Username)
+                  .IsUnique();
+
+            entity.Property(x => x.PasswordHash)
+                  .IsRequired();
+
+            entity.Property(x => x.Role)
+                  .IsRequired()
+                  .HasMaxLength(50);
+        });
     }
 
 }

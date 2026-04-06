@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using TaskFlow.Application.DTOs.Auth;
 using TaskFlow.Application.Interfaces.Security;
+using TaskFlow.Domain.Entities;
 using TaskFlow.Infrastructure.Persistence;
 
 namespace TaskFlow.API.Controllers;
@@ -12,9 +13,7 @@ public class AuthController : ControllerBase
 {
     private readonly IPasswordHasherService _passwordHasherService;
     private readonly IJwtTokenService _jwtTokenService;
-
-    private readonly TaskFlowDbContext _context; // TEST-999
-    // comment deneme
+    private readonly TaskFlowDbContext _context;
 
     public AuthController(
         TaskFlowDbContext context,
@@ -26,26 +25,42 @@ public class AuthController : ControllerBase
         _jwtTokenService = jwtTokenService;
     }
 
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
+    {
+        var exists = await _context.Users.AnyAsync(x => x.Username == request.Username);
+        if (exists)
+            return Conflict("Bu kullanıcı adı zaten alınmış.");
+
+        var user = new AppUser
+        {
+            Username = request.Username,
+            PasswordHash = _passwordHasherService.Hash(request.Password),
+            Role = "User"
+        };
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        return Ok("Kayıt başarılı.");
+    }
+
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
     {
-        
         var user = await _context.Users
             .FirstOrDefaultAsync(x => x.Username == request.Username);
 
         if (user is null)
-            return Unauthorized("Kullanıcı adı veya şifre hatalı");
+            return Unauthorized("Kullanıcı adı veya şifre hatalı.");
 
-        
         var isValid = _passwordHasherService.Verify(request.Password, user.PasswordHash);
 
         if (!isValid)
-            return Unauthorized("Kullanıcı adı veya şifre hatalı");
+            return Unauthorized("Kullanıcı adı veya şifre hatalı.");
 
-        
         var token = _jwtTokenService.GenerateToken(user);
 
-        
         return Ok(new LoginResponseDto
         {
             Token = token,
