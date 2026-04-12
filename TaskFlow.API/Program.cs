@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using TaskFlow.API.Middleware;
+using TaskFlow.API.Services;
 using TaskFlow.Application.Features.Auth;
+using TaskFlow.Application.Interfaces.Services;
 using TaskFlow.Application.Features.Tasks.Create;
 using TaskFlow.Application.Features.Tasks.Get;
 using TaskFlow.Application.Validators;
@@ -33,6 +35,11 @@ try
 
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
+
+    // IHttpContextAccessor is not registered by default in ASP.NET Core.
+    // CurrentUserService depends on it to read the active request's claims.
+    builder.Services.AddHttpContextAccessor();
+    builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
     builder.Services.AddSwaggerGen(options =>
     {
         options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
