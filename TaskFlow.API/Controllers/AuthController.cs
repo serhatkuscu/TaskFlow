@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using TaskFlow.Application.DTOs.Auth;
+using TaskFlow.Application.Interfaces.Repositories;
 using TaskFlow.Application.Interfaces.Security;
 using TaskFlow.Domain.Entities;
-using TaskFlow.Infrastructure.Persistence;
 
 namespace TaskFlow.API.Controllers;
 
@@ -11,16 +10,16 @@ namespace TaskFlow.API.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
+    private readonly IUserRepository _userRepository;
     private readonly IPasswordHasherService _passwordHasherService;
     private readonly IJwtTokenService _jwtTokenService;
-    private readonly TaskFlowDbContext _context;
 
     public AuthController(
-        TaskFlowDbContext context,
+        IUserRepository userRepository,
         IPasswordHasherService passwordHasherService,
         IJwtTokenService jwtTokenService)
     {
-        _context = context;
+        _userRepository = userRepository;
         _passwordHasherService = passwordHasherService;
         _jwtTokenService = jwtTokenService;
     }
@@ -28,7 +27,7 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
     {
-        var exists = await _context.Users.AnyAsync(x => x.Username == request.Username);
+        var exists = await _userRepository.ExistsAsync(request.Username);
         if (exists)
             return Conflict("Bu kullanıcı adı zaten alınmış.");
 
@@ -39,8 +38,7 @@ public class AuthController : ControllerBase
             Role = "User"
         };
 
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
+        await _userRepository.AddAsync(user);
 
         return Ok("Kayıt başarılı.");
     }
@@ -48,8 +46,7 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
     {
-        var user = await _context.Users
-            .FirstOrDefaultAsync(x => x.Username == request.Username);
+        var user = await _userRepository.GetByUsernameAsync(request.Username);
 
         if (user is null)
             return Unauthorized("Kullanıcı adı veya şifre hatalı.");
