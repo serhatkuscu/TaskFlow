@@ -33,6 +33,17 @@ public class TaskFlowDbContext : DbContext
 
             entity.Property(x => x.Status)
                   .IsRequired();
+
+            entity.Property(x => x.UserId)
+                  .IsRequired();
+
+            // Each task belongs to exactly one user.
+            // No navigation property on TaskItem — configured entirely here.
+            // Cascade: deleting a user removes all their tasks.
+            entity.HasOne<AppUser>()
+                  .WithMany()
+                  .HasForeignKey(x => x.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<AppUser>(entity =>

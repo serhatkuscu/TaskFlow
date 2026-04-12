@@ -19,6 +19,7 @@ public static class ServiceRegistration
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
         services.AddScoped<ITaskRepository, TaskRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 

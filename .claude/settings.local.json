@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet build:*)",
+      "Bash(dotnet ef:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(powershell -Command \"Get-Service -Name ''MSSQL*'' | Select-Object Name, Status, DisplayName\")",
+      "Bash(curl -s -X POST http://localhost:5008/api/auth/register -H \"Content-Type: application/json\" -d \"{\"\"username\"\":\"\"admin\"\",\"\"password\"\":\"\"Admin123!\"\"}\")",
+      "Bash(taskkill //F //IM \"TaskFlow.API.exe\")",
+      "Bash(curl -s http://localhost:5008/swagger/v1/swagger.json)"
+    ]
+  }
+}
