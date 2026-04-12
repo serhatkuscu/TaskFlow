@@ -5,7 +5,7 @@ namespace TaskFlow.Domain.Entities;
 
 public class TaskItem : BaseEntity
 {
-    public string Title { get; private set; }
+    public string Title { get; private set; } = string.Empty;
     public string? Description { get; private set; }
     public TaskItemStatus Status { get; private set; }
 
