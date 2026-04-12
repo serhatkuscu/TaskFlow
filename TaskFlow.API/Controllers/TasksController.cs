@@ -14,12 +14,10 @@ public class TasksController : ControllerBase
     private readonly CreateTaskHandler _createTaskHandler;
     private readonly GetAllTasksHandler _getAllTasksHandler;
 
-    public TasksController(
-        CreateTaskHandler createTaskHandler,
-        GetAllTasksHandler getAllTasksHandler)
+    public TasksController(CreateTaskHandler createTaskHandler, GetAllTasksHandler getAllTasksHandler)
     {
-        _createTaskHandler = createTaskHandler;
-        _getAllTasksHandler = getAllTasksHandler;
+        _createTaskHandler  = createTaskHandler;
+        _getAllTasksHandler  = getAllTasksHandler;
     }
 
     [HttpPost]
@@ -28,7 +26,7 @@ public class TasksController : ControllerBase
         var result = await _createTaskHandler.HandleAsync(request);
 
         if (result.IsFailure)
-            return BadRequest(new { error = result.Error });
+            return BadRequest(new { code = result.Error!.Code, message = result.Error.Message });
 
         return CreatedAtAction(nameof(GetAll), new { }, result.Value);
     }
@@ -37,6 +35,10 @@ public class TasksController : ControllerBase
     public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
     {
         var result = await _getAllTasksHandler.HandleAsync(pageNumber, pageSize);
-        return Ok(result);
+
+        if (result.IsFailure)
+            return BadRequest(new { code = result.Error!.Code, message = result.Error.Message });
+
+        return Ok(result.Value);
     }
 }

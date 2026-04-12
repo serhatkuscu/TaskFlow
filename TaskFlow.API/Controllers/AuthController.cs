@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using TaskFlow.Application.Common;
 using TaskFlow.Application.DTOs.Auth;
-using TaskFlow.Application.Interfaces.Repositories;
-using TaskFlow.Application.Interfaces.Security;
-using TaskFlow.Domain.Entities;
+using TaskFlow.Application.Features.Auth;
 
 namespace TaskFlow.API.Controllers;
 
@@ -10,58 +9,34 @@ namespace TaskFlow.API.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly IUserRepository _userRepository;
-    private readonly IPasswordHasherService _passwordHasherService;
-    private readonly IJwtTokenService _jwtTokenService;
+    private readonly RegisterHandler _registerHandler;
+    private readonly LoginHandler _loginHandler;
 
-    public AuthController(
-        IUserRepository userRepository,
-        IPasswordHasherService passwordHasherService,
-        IJwtTokenService jwtTokenService)
+    public AuthController(RegisterHandler registerHandler, LoginHandler loginHandler)
     {
-        _userRepository = userRepository;
-        _passwordHasherService = passwordHasherService;
-        _jwtTokenService = jwtTokenService;
+        _registerHandler = registerHandler;
+        _loginHandler    = loginHandler;
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
     {
-        var exists = await _userRepository.ExistsAsync(request.Username);
-        if (exists)
-            return Conflict("Bu kullanıcı adı zaten alınmış.");
+        var result = await _registerHandler.HandleAsync(request.Username, request.Password);
 
-        var user = new AppUser
-        {
-            Username = request.Username,
-            PasswordHash = _passwordHasherService.Hash(request.Password),
-            Role = "User"
-        };
+        if (result.IsFailure)
+            return Conflict(new { code = result.Error!.Code, message = result.Error.Message });
 
-        await _userRepository.AddAsync(user);
-
-        return Ok("Kayıt başarılı.");
+        return Ok(new { message = result.Value });
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
     {
-        var user = await _userRepository.GetByUsernameAsync(request.Username);
+        var result = await _loginHandler.HandleAsync(request.Username, request.Password);
 
-        if (user is null)
-            return Unauthorized("Kullanıcı adı veya şifre hatalı.");
+        if (result.IsFailure)
+            return Unauthorized(new { code = result.Error!.Code, message = result.Error.Message });
 
-        var isValid = _passwordHasherService.Verify(request.Password, user.PasswordHash);
-
-        if (!isValid)
-            return Unauthorized("Kullanıcı adı veya şifre hatalı.");
-
-        var token = _jwtTokenService.GenerateToken(user);
-
-        return Ok(new LoginResponseDto
-        {
-            Token = token,
-            ExpireAt = DateTime.UtcNow.AddMinutes(60)
-        });
+        return Ok(result.Value);
     }
 }
