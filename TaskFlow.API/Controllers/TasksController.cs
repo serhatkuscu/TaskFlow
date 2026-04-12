@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskFlow.Application.Common;
@@ -24,7 +25,10 @@ public class TasksController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateTaskRequest request)
     {
-        var result = await _createTaskHandler.HandleAsync(request);
+        if (!TryGetUserId(out var userId))
+            return Unauthorized(new { code = Error.Codes.Unauthorized, message = "Geçersiz token." });
+
+        var result = await _createTaskHandler.HandleAsync(request, userId);
 
         return result.IsFailure
             ? ToErrorResponse(result.Error!)
@@ -34,11 +38,24 @@ public class TasksController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
     {
-        var result = await _getAllTasksHandler.HandleAsync(pageNumber, pageSize);
+        if (!TryGetUserId(out var userId))
+            return Unauthorized(new { code = Error.Codes.Unauthorized, message = "Geçersiz token." });
+
+        var result = await _getAllTasksHandler.HandleAsync(pageNumber, pageSize, userId);
 
         return result.IsFailure
             ? ToErrorResponse(result.Error!)
             : Ok(result.Value);
+    }
+
+    // Extracts the authenticated user's ID from the JWT NameIdentifier claim.
+    // Returns false if the claim is missing or malformed — should never happen
+    // for a valid token, but defensive programming is correct here.
+    private bool TryGetUserId(out int userId)
+    {
+        userId = 0;
+        var claim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return claim is not null && int.TryParse(claim, out userId);
     }
 
     private IActionResult ToErrorResponse(Error error)

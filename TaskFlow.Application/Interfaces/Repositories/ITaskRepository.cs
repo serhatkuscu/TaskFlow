@@ -6,5 +6,5 @@ namespace TaskFlow.Application.Interfaces.Repositories;
 public interface ITaskRepository
 {
     Task AddAsync(TaskItem task);
-    Task<(List<TaskItem> Items, int TotalCount)> GetAllAsync(PaginationQuery query);
+    Task<(List<TaskItem> Items, int TotalCount)> GetAllAsync(PaginationQuery query, int userId);
 }

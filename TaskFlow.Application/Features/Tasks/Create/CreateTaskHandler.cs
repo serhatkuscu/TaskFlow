@@ -17,9 +17,11 @@ public class CreateTaskHandler
         _logger         = logger;
     }
 
-    public async Task<Result<TaskResponseDto>> HandleAsync(CreateTaskRequest request)
+    // userId comes from the JWT token, extracted by the controller.
+    // The handler never touches HttpContext — it receives plain data only.
+    public async Task<Result<TaskResponseDto>> HandleAsync(CreateTaskRequest request, int userId)
     {
-        var task = new TaskItem(request.Title, request.Description);
+        var task = new TaskItem(request.Title, request.Description, userId);
 
         await _taskRepository.AddAsync(task);
 

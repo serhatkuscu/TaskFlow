@@ -9,13 +9,17 @@ public class TaskItem : BaseEntity
     public string? Description { get; private set; }
     public TaskItemStatus Status { get; private set; }
 
+    // Foreign key to AppUser. int matches AppUser.Id (SQL Server Identity).
+    public int UserId { get; private set; }
+
     private TaskItem() { } // EF Core için
 
-    public TaskItem(string title, string? description)
+    public TaskItem(string title, string? description, int userId)
     {
-        Title = title;
+        Title       = title;
         Description = description;
-        Status = TaskItemStatus.Pending;
+        Status      = TaskItemStatus.Pending;
+        UserId      = userId;
     }
 
     public void Start()

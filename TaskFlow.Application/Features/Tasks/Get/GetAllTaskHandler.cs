@@ -16,7 +16,8 @@ public class GetAllTasksHandler
         _logger         = logger;
     }
 
-    public async Task<Result<PagedResult<TaskResponseDto>>> HandleAsync(int pageNumber = 1, int pageSize = 10)
+    // userId comes from the JWT token, extracted by the controller.
+    public async Task<Result<PagedResult<TaskResponseDto>>> HandleAsync(int pageNumber, int pageSize, int userId)
     {
         var queryResult = PaginationQuery.Create(pageNumber, pageSize);
         if (queryResult.IsFailure)
@@ -31,7 +32,7 @@ public class GetAllTasksHandler
 
         var query = queryResult.Value;
 
-        var (items, totalCount) = await _taskRepository.GetAllAsync(query);
+        var (items, totalCount) = await _taskRepository.GetAllAsync(query, userId);
 
         var dtos = items.Select(task => new TaskResponseDto
         {
