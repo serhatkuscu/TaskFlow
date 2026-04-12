@@ -20,8 +20,17 @@ public class TaskRepository : ITaskRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<List<TaskItem>> GetAllAsync()
+    public async Task<(List<TaskItem> Items, int TotalCount)> GetAllAsync(int pageNumber, int pageSize)
     {
-        return await _context.Tasks.ToListAsync();
+        var query = _context.Tasks.OrderByDescending(x => x.CreatedAt);
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
     }
 }
