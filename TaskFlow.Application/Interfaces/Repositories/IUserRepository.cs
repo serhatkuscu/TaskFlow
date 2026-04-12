@@ -6,5 +6,8 @@ public interface IUserRepository
 {
     Task<AppUser?> GetByUsernameAsync(string username);
     Task<bool> ExistsAsync(string username);
-    Task AddAsync(AppUser user);
+    /// <summary>
+    /// Kullanıcıyı ekler. Username zaten varsa false döner (race condition dahil).
+    /// </summary>
+    Task<bool> AddAsync(AppUser user);
 }

@@ -19,6 +19,8 @@ public class RegisterHandler
 
     public async Task<Result<string>> HandleAsync(string username, string password)
     {
+        // Fast-path: avoids a write attempt in the common duplicate case.
+        // This check is NOT the safety net — the DB unique constraint is.
         var exists = await _userRepository.ExistsAsync(username);
         if (exists)
             return Result<string>.Failure(
@@ -31,7 +33,12 @@ public class RegisterHandler
             Role         = AppUserRoles.User
         };
 
-        await _userRepository.AddAsync(user);
+        // AddAsync returns false when a concurrent registration wins the race and
+        // the DB unique index blocks our insert. Treat it as a conflict, not a crash.
+        var added = await _userRepository.AddAsync(user);
+        if (!added)
+            return Result<string>.Failure(
+                Error.Create(Error.Codes.Conflict, "Bu kullanıcı adı zaten alınmış."));
 
         return Result<string>.Success("Kayıt başarılı.");
     }
