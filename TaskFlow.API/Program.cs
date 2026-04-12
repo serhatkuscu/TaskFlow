@@ -3,6 +3,7 @@ using FluentValidation.AspNetCore;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using TaskFlow.API.Middleware;
 using TaskFlow.Application.Features.Tasks.Create;
 using TaskFlow.Application.Features.Tasks.Get;
 using TaskFlow.Application.Validators;
@@ -85,6 +86,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
