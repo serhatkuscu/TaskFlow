@@ -10,7 +10,7 @@ namespace TaskFlow.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly RegisterHandler _registerHandler;
-    private readonly LoginHandler _loginHandler;
+    private readonly LoginHandler    _loginHandler;
 
     public AuthController(RegisterHandler registerHandler, LoginHandler loginHandler)
     {
@@ -23,10 +23,9 @@ public class AuthController : ControllerBase
     {
         var result = await _registerHandler.HandleAsync(request.Username, request.Password);
 
-        if (result.IsFailure)
-            return Conflict(new { code = result.Error!.Code, message = result.Error.Message });
-
-        return Ok(new { message = result.Value });
+        return result.IsFailure
+            ? ToErrorResponse(result.Error!)
+            : StatusCode(201, new { message = result.Value });
     }
 
     [HttpPost("login")]
@@ -34,9 +33,22 @@ public class AuthController : ControllerBase
     {
         var result = await _loginHandler.HandleAsync(request.Username, request.Password);
 
-        if (result.IsFailure)
-            return Unauthorized(new { code = result.Error!.Code, message = result.Error.Message });
+        return result.IsFailure
+            ? ToErrorResponse(result.Error!)
+            : Ok(result.Value);
+    }
 
-        return Ok(result.Value);
+    private IActionResult ToErrorResponse(Error error)
+    {
+        var body = new { code = error.Code, message = error.Message };
+
+        return error.Code switch
+        {
+            Error.Codes.Conflict     => Conflict(body),
+            Error.Codes.Unauthorized => Unauthorized(body),
+            Error.Codes.NotFound     => NotFound(body),
+            Error.Codes.Validation   => BadRequest(body),
+            _                        => StatusCode(500, body)
+        };
     }
 }

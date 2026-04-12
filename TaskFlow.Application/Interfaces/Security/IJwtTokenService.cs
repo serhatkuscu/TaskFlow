@@ -1,8 +1,10 @@
-﻿using TaskFlow.Domain.Entities;
+using TaskFlow.Domain.Entities;
 
 namespace TaskFlow.Application.Interfaces.Security;
 
+public record JwtTokenResult(string Token, DateTime ExpireAt);
+
 public interface IJwtTokenService
 {
-    string GenerateToken(AppUser user);
+    JwtTokenResult GenerateToken(AppUser user);
 }

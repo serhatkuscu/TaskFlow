@@ -1,6 +1,7 @@
 using TaskFlow.Application.Common;
 using TaskFlow.Application.Interfaces.Repositories;
 using TaskFlow.Application.Interfaces.Security;
+using TaskFlow.Domain.Constants;
 using TaskFlow.Domain.Entities;
 
 namespace TaskFlow.Application.Features.Auth;
@@ -12,7 +13,7 @@ public class RegisterHandler
 
     public RegisterHandler(IUserRepository userRepository, IPasswordHasherService passwordHasherService)
     {
-        _userRepository = userRepository;
+        _userRepository        = userRepository;
         _passwordHasherService = passwordHasherService;
     }
 
@@ -27,7 +28,7 @@ public class RegisterHandler
         {
             Username     = username,
             PasswordHash = _passwordHasherService.Hash(password),
-            Role         = "User"
+            Role         = AppUserRoles.User
         };
 
         await _userRepository.AddAsync(user);

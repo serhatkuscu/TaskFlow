@@ -16,9 +16,9 @@ public class LoginHandler
         IPasswordHasherService passwordHasherService,
         IJwtTokenService jwtTokenService)
     {
-        _userRepository = userRepository;
+        _userRepository        = userRepository;
         _passwordHasherService = passwordHasherService;
-        _jwtTokenService = jwtTokenService;
+        _jwtTokenService       = jwtTokenService;
     }
 
     public async Task<Result<LoginResponseDto>> HandleAsync(string username, string password)
@@ -34,12 +34,12 @@ public class LoginHandler
             return Result<LoginResponseDto>.Failure(
                 Error.Create(Error.Codes.Unauthorized, "Kullanıcı adı veya şifre hatalı."));
 
-        var token = _jwtTokenService.GenerateToken(user);
+        var tokenResult = _jwtTokenService.GenerateToken(user);
 
         return Result<LoginResponseDto>.Success(new LoginResponseDto
         {
-            Token    = token,
-            ExpireAt = DateTime.UtcNow.AddMinutes(60)
+            Token    = tokenResult.Token,
+            ExpireAt = tokenResult.ExpireAt
         });
     }
 }
