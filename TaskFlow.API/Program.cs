@@ -3,6 +3,7 @@ using FluentValidation.AspNetCore;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using TaskFlow.API.Middleware;
 using TaskFlow.Application.Features.Auth;
 using TaskFlow.Application.Features.Tasks.Create;
@@ -10,93 +11,129 @@ using TaskFlow.Application.Features.Tasks.Get;
 using TaskFlow.Application.Validators;
 using TaskFlow.Infrastructure.DependencyInjection;
 
-var builder = WebApplication.CreateBuilder(args);
+// Bootstrap logger: catches fatal errors before the host is fully built
+// (e.g. missing config, DI failures). Replaced by the full Serilog logger below.
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
+try
 {
-    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
-        Scheme = "Bearer",
-        BearerFormat = "JWT",
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Description = "Token'ı girin. Örnek: eyJhbGci..."
-    });
+    Log.Information("TaskFlow API başlatılıyor...");
 
-    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    var builder = WebApplication.CreateBuilder(args);
+
+    // Replace the default .NET logging pipeline with Serilog.
+    // Configuration is read from appsettings.json "Serilog" section.
+    builder.Host.UseSerilog((context, services, configuration) =>
+        configuration
+            .ReadFrom.Configuration(context.Configuration)
+            .ReadFrom.Services(services)
+            .Enrich.FromLogContext());
+
+    builder.Services.AddControllers();
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen(options =>
     {
+        options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
         {
-            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            Name        = "Authorization",
+            Type        = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+            Scheme      = "Bearer",
+            BearerFormat = "JWT",
+            In          = Microsoft.OpenApi.Models.ParameterLocation.Header,
+            Description = "Token'ı girin. Örnek: eyJhbGci..."
+        });
+
+        options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+        {
             {
-                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                new Microsoft.OpenApi.Models.OpenApiSecurityScheme
                 {
-                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
+                    Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                    {
+                        Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                        Id   = "Bearer"
+                    }
+                },
+                Array.Empty<string>()
+            }
+        });
     });
-});
 
-builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddScoped<CreateTaskHandler>();
-builder.Services.AddScoped<GetAllTasksHandler>();
-builder.Services.AddScoped<RegisterHandler>();
-builder.Services.AddScoped<LoginHandler>();
+    builder.Services.AddInfrastructure(builder.Configuration);
+    builder.Services.AddScoped<CreateTaskHandler>();
+    builder.Services.AddScoped<GetAllTasksHandler>();
+    builder.Services.AddScoped<RegisterHandler>();
+    builder.Services.AddScoped<LoginHandler>();
 
-builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateTaskRequestValidator>();
+    builder.Services.AddFluentValidationAutoValidation();
+    builder.Services.AddValidatorsFromAssemblyContaining<CreateTaskRequestValidator>();
 
-var jwtSection = builder.Configuration.GetSection("Jwt");
-var key = jwtSection["Key"]!;
-var issuer = jwtSection["Issuer"]!;
-var audience = jwtSection["Audience"]!;
+    var jwtSection = builder.Configuration.GetSection("Jwt");
+    var key        = jwtSection["Key"]!;
+    var issuer     = jwtSection["Issuer"]!;
+    var audience   = jwtSection["Audience"]!;
 
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
+    builder.Services
+        .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
         {
-            ValidateIssuer = true,
-            ValidIssuer = issuer,
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer           = true,
+                ValidIssuer              = issuer,
 
-            ValidateAudience = true,
-            ValidAudience = audience,
+                ValidateAudience         = true,
+                ValidAudience            = audience,
 
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
 
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero
-        };
+                ValidateLifetime         = true,
+                ClockSkew                = TimeSpan.Zero
+            };
+        });
+
+    builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy("AdminOnly", policy =>
+            policy.RequireRole("Admin"));
     });
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("AdminOnly", policy =>
-        policy.RequireRole("Admin"));
-});
+    var app = builder.Build();
 
-var app = builder.Build();
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseMiddleware<ExceptionMiddleware>();
+
+    // Serilog request logging: logs each HTTP request with method, path,
+    // status code, and elapsed time. Placed after ExceptionMiddleware so
+    // unhandled exceptions are already handled before this logs the outcome.
+    app.UseSerilogRequestLogging(options =>
+    {
+        options.MessageTemplate =
+            "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+    });
+
+    app.UseHttpsRedirection();
+
+    app.UseAuthentication();
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    app.Run();
 }
-
-app.UseMiddleware<ExceptionMiddleware>();
-
-app.UseHttpsRedirection();
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+catch (Exception ex) when (ex is not HostAbortedException)
+{
+    Log.Fatal(ex, "TaskFlow API beklenmedik bir hatayla kapandı.");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

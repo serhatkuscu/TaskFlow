@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using TaskFlow.Application.Common;
 using TaskFlow.Application.DTOs.Task;
 using TaskFlow.Application.Interfaces.Repositories;
@@ -7,11 +8,13 @@ namespace TaskFlow.Application.Features.Tasks.Create;
 
 public class CreateTaskHandler
 {
-    private readonly ITaskRepository _taskRepository;
+    private readonly ITaskRepository          _taskRepository;
+    private readonly ILogger<CreateTaskHandler> _logger;
 
-    public CreateTaskHandler(ITaskRepository taskRepository)
+    public CreateTaskHandler(ITaskRepository taskRepository, ILogger<CreateTaskHandler> logger)
     {
         _taskRepository = taskRepository;
+        _logger         = logger;
     }
 
     public async Task<Result<TaskResponseDto>> HandleAsync(CreateTaskRequest request)
@@ -19,6 +22,11 @@ public class CreateTaskHandler
         var task = new TaskItem(request.Title, request.Description);
 
         await _taskRepository.AddAsync(task);
+
+        _logger.LogInformation(
+            "Task created. Id: {TaskId}, Title: {Title}",
+            task.Id,
+            task.Title);
 
         var response = new TaskResponseDto
         {

@@ -43,11 +43,17 @@ public class ExceptionMiddleware
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Beklenmedik hata oluştu. Path: {Path}", context.Request.Path);
+            _logger.LogError(ex,
+                "Unhandled exception. Method: {Method}, Path: {Path}, ExceptionType: {ExceptionType}",
+                context.Request.Method,
+                context.Request.Path,
+                ex.GetType().Name);
 
             if (context.Response.HasStarted)
             {
-                _logger.LogWarning("Response zaten başladığı için hata yanıtı yazılamıyor.");
+                _logger.LogWarning(
+                    "Response already started, cannot write error response. Path: {Path}",
+                    context.Request.Path);
                 return;
             }
 

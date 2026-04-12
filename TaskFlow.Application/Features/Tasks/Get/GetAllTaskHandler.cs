@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using TaskFlow.Application.Common;
 using TaskFlow.Application.DTOs.Task;
 using TaskFlow.Application.Interfaces.Repositories;
@@ -6,18 +7,27 @@ namespace TaskFlow.Application.Features.Tasks.Get;
 
 public class GetAllTasksHandler
 {
-    private readonly ITaskRepository _taskRepository;
+    private readonly ITaskRepository              _taskRepository;
+    private readonly ILogger<GetAllTasksHandler>  _logger;
 
-    public GetAllTasksHandler(ITaskRepository taskRepository)
+    public GetAllTasksHandler(ITaskRepository taskRepository, ILogger<GetAllTasksHandler> logger)
     {
         _taskRepository = taskRepository;
+        _logger         = logger;
     }
 
     public async Task<Result<PagedResult<TaskResponseDto>>> HandleAsync(int pageNumber = 1, int pageSize = 10)
     {
         var queryResult = PaginationQuery.Create(pageNumber, pageSize);
         if (queryResult.IsFailure)
+        {
+            _logger.LogWarning(
+                "Invalid pagination parameters. PageNumber: {PageNumber}, PageSize: {PageSize}, Error: {Error}",
+                pageNumber,
+                pageSize,
+                queryResult.Error!.Message);
             return Result<PagedResult<TaskResponseDto>>.Failure(queryResult.Error!);
+        }
 
         var query = queryResult.Value;
 

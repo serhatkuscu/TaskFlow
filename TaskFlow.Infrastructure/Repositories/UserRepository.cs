@@ -1,5 +1,6 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using TaskFlow.Application.Interfaces.Repositories;
 using TaskFlow.Domain.Entities;
 using TaskFlow.Infrastructure.Persistence;
@@ -14,11 +15,13 @@ public class UserRepository : IUserRepository
     private static readonly IReadOnlySet<int> UniqueConstraintErrorNumbers =
         new HashSet<int> { 2601, 2627 };
 
-    private readonly TaskFlowDbContext _context;
+    private readonly TaskFlowDbContext       _context;
+    private readonly ILogger<UserRepository> _logger;
 
-    public UserRepository(TaskFlowDbContext context)
+    public UserRepository(TaskFlowDbContext context, ILogger<UserRepository> logger)
     {
         _context = context;
+        _logger  = logger;
     }
 
     public async Task<AppUser?> GetByUsernameAsync(string username)
@@ -42,6 +45,12 @@ public class UserRepository : IUserRepository
             // Race condition: two concurrent registrations passed the ExistsAsync
             // check simultaneously and both tried to insert. The DB unique index
             // caught the second insert. We treat this identically to a known duplicate.
+            _logger.LogWarning(
+                "Concurrent registration race condition detected for Username: {Username}. " +
+                "DB unique constraint blocked the duplicate insert (SQL error {SqlErrorNumber}).",
+                user.Username,
+                sqlEx.Number);
+
             _context.ChangeTracker.Clear();
             return false;
         }
