@@ -15,15 +15,13 @@ public class GetAllTasksHandler
 
     public async Task<Result<PagedResult<TaskResponseDto>>> HandleAsync(int pageNumber = 1, int pageSize = 10)
     {
-        if (pageNumber < 1)
-            return Result<PagedResult<TaskResponseDto>>.Failure(
-                Error.Create(Error.Codes.Validation, "Sayfa numarası 1'den küçük olamaz."));
+        var queryResult = PaginationQuery.Create(pageNumber, pageSize);
+        if (queryResult.IsFailure)
+            return Result<PagedResult<TaskResponseDto>>.Failure(queryResult.Error!);
 
-        if (pageSize < 1 || pageSize > 50)
-            return Result<PagedResult<TaskResponseDto>>.Failure(
-                Error.Create(Error.Codes.Validation, "Sayfa boyutu 1 ile 50 arasında olmalıdır."));
+        var query = queryResult.Value;
 
-        var (items, totalCount) = await _taskRepository.GetAllAsync(pageNumber, pageSize);
+        var (items, totalCount) = await _taskRepository.GetAllAsync(query);
 
         var dtos = items.Select(task => new TaskResponseDto
         {
@@ -34,8 +32,7 @@ public class GetAllTasksHandler
             CreatedAt   = task.CreatedAt
         }).ToList();
 
-        var pagedResult = new PagedResult<TaskResponseDto>(dtos, totalCount, pageNumber, pageSize);
-
-        return Result<PagedResult<TaskResponseDto>>.Success(pagedResult);
+        return Result<PagedResult<TaskResponseDto>>.Success(
+            new PagedResult<TaskResponseDto>(dtos, totalCount, query.PageNumber, query.PageSize));
     }
 }

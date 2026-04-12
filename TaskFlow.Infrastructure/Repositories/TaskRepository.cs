@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TaskFlow.Application.Common;
 using TaskFlow.Application.Interfaces.Repositories;
 using TaskFlow.Domain.Entities;
 using TaskFlow.Infrastructure.Persistence;
@@ -20,15 +21,18 @@ public class TaskRepository : ITaskRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<(List<TaskItem> Items, int TotalCount)> GetAllAsync(int pageNumber, int pageSize)
+    public async Task<(List<TaskItem> Items, int TotalCount)> GetAllAsync(PaginationQuery query)
     {
-        var query = _context.Tasks.OrderByDescending(x => x.CreatedAt);
+        // AsNoTracking: read-only query — no need to track entities in the change tracker.
+        var baseQuery = _context.Tasks
+            .AsNoTracking()
+            .OrderByDescending(x => x.CreatedAt);
 
-        var totalCount = await query.CountAsync();
+        var totalCount = await baseQuery.CountAsync();
 
-        var items = await query
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
+        var items = await baseQuery
+            .Skip((query.PageNumber - 1) * query.PageSize)
+            .Take(query.PageSize)
             .ToListAsync();
 
         return (items, totalCount);
