@@ -21,6 +21,19 @@ public class TaskRepository : ITaskRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task UpdateAsync(TaskItem task)
+    {
+        // EF Core tracks the entity fetched by GetByIdAsync (no AsNoTracking),
+        // so calling SaveChangesAsync is enough to persist the changes.
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<TaskItem?> GetByIdAsync(Guid id, int userId)
+    {
+        return await _context.Tasks
+            .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
+    }
+
     public async Task<(List<TaskItem> Items, int TotalCount)> GetAllAsync(PaginationQuery query, int userId)
     {
         // AsNoTracking: read-only query — no need to track entities in the change tracker.

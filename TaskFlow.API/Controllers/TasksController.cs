@@ -4,6 +4,8 @@ using TaskFlow.Application.Common;
 using TaskFlow.Application.DTOs.Task;
 using TaskFlow.Application.Features.Tasks.Create;
 using TaskFlow.Application.Features.Tasks.Get;
+using TaskFlow.Application.Features.Tasks.GetById;
+using TaskFlow.Application.Features.Tasks.Update;
 
 namespace TaskFlow.API.Controllers;
 
@@ -12,13 +14,21 @@ namespace TaskFlow.API.Controllers;
 [Authorize]
 public class TasksController : ControllerBase
 {
-    private readonly CreateTaskHandler  _createTaskHandler;
-    private readonly GetAllTasksHandler _getAllTasksHandler;
+    private readonly CreateTaskHandler   _createTaskHandler;
+    private readonly GetAllTasksHandler  _getAllTasksHandler;
+    private readonly GetTaskByIdHandler  _getTaskByIdHandler;
+    private readonly UpdateTaskHandler   _updateTaskHandler;
 
-    public TasksController(CreateTaskHandler createTaskHandler, GetAllTasksHandler getAllTasksHandler)
+    public TasksController(
+        CreateTaskHandler  createTaskHandler,
+        GetAllTasksHandler getAllTasksHandler,
+        GetTaskByIdHandler getTaskByIdHandler,
+        UpdateTaskHandler  updateTaskHandler)
     {
         _createTaskHandler  = createTaskHandler;
         _getAllTasksHandler  = getAllTasksHandler;
+        _getTaskByIdHandler = getTaskByIdHandler;
+        _updateTaskHandler  = updateTaskHandler;
     }
 
     [HttpPost]
@@ -29,6 +39,26 @@ public class TasksController : ControllerBase
         return result.IsFailure
             ? ToErrorResponse(result.Error!)
             : CreatedAtAction(nameof(GetAll), new { }, result.Value);
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id)
+    {
+        var result = await _getTaskByIdHandler.HandleAsync(id);
+
+        return result.IsFailure
+            ? ToErrorResponse(result.Error!)
+            : Ok(result.Value);
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateTaskRequest request)
+    {
+        var result = await _updateTaskHandler.HandleAsync(id, request);
+
+        return result.IsFailure
+            ? ToErrorResponse(result.Error!)
+            : Ok(result.Value);
     }
 
     [HttpGet]
