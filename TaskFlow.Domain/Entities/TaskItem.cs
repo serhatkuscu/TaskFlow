@@ -22,6 +22,12 @@ public class TaskItem : BaseEntity
         UserId      = userId;
     }
 
+    public void Update(string title, string? description)
+    {
+        Title       = title;
+        Description = description;
+    }
+
     public void Start()
     {
         if (Status != TaskItemStatus.Pending)

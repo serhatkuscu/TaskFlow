@@ -10,6 +10,8 @@ using TaskFlow.Application.Features.Auth;
 using TaskFlow.Application.Interfaces.Services;
 using TaskFlow.Application.Features.Tasks.Create;
 using TaskFlow.Application.Features.Tasks.Get;
+using TaskFlow.Application.Features.Tasks.GetById;
+using TaskFlow.Application.Features.Tasks.Update;
 using TaskFlow.Application.Validators;
 using TaskFlow.Infrastructure.DependencyInjection;
 
@@ -71,6 +73,8 @@ try
     builder.Services.AddInfrastructure(builder.Configuration);
     builder.Services.AddScoped<CreateTaskHandler>();
     builder.Services.AddScoped<GetAllTasksHandler>();
+    builder.Services.AddScoped<GetTaskByIdHandler>();
+    builder.Services.AddScoped<UpdateTaskHandler>();
     builder.Services.AddScoped<RegisterHandler>();
     builder.Services.AddScoped<LoginHandler>();
 
