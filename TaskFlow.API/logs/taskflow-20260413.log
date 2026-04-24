@@ -1,0 +1,109 @@
+[2026-04-13 00:10:20.706 +03:00 INF] Now listening on: https://localhost:7042 {"EventId":{"Id":14,"Name":"ListeningOnAddress"},"SourceContext":"Microsoft.Hosting.Lifetime","MachineName":"DESKTOP-HPJE5SK","ThreadId":1}
+[2026-04-13 00:10:20.735 +03:00 INF] Now listening on: http://localhost:5008 {"EventId":{"Id":14,"Name":"ListeningOnAddress"},"SourceContext":"Microsoft.Hosting.Lifetime","MachineName":"DESKTOP-HPJE5SK","ThreadId":1}
+[2026-04-13 00:10:20.791 +03:00 INF] Application started. Press Ctrl+C to shut down. {"SourceContext":"Microsoft.Hosting.Lifetime","MachineName":"DESKTOP-HPJE5SK","ThreadId":1}
+[2026-04-13 00:10:20.792 +03:00 INF] Hosting environment: Development {"SourceContext":"Microsoft.Hosting.Lifetime","MachineName":"DESKTOP-HPJE5SK","ThreadId":1}
+[2026-04-13 00:10:20.793 +03:00 INF] Content root path: C:\Users\victus\source\repos\TaskFlow\.claude\worktrees\angry-albattani\TaskFlow.API {"SourceContext":"Microsoft.Hosting.Lifetime","MachineName":"DESKTOP-HPJE5SK","ThreadId":1}
+[2026-04-13 00:10:28.076 +03:00 INF] Executed DbCommand (40ms) [Parameters=[@__username_0='?' (Size = 100)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Username] = @__username_0 {"EventId":{"Id":20101,"Name":"Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted"},"SourceContext":"Microsoft.EntityFrameworkCore.Database.Command","ActionId":"7083bb95-8d8f-491e-978f-70f8c18f8ac4","ActionName":"TaskFlow.API.Controllers.AuthController.Login (TaskFlow.API)","RequestId":"0HNKOQVJV5U56:00000009","RequestPath":"/api/Auth/login","ConnectionId":"0HNKOQVJV5U56","MachineName":"DESKTOP-HPJE5SK","ThreadId":7}
+[2026-04-13 00:10:28.191 +03:00 ERR] HTTP POST /api/Auth/login responded 500 in 1346.2117 ms {"SourceContext":"Serilog.AspNetCore.RequestLoggingMiddleware","RequestId":"0HNKOQVJV5U56:00000009","ConnectionId":"0HNKOQVJV5U56","MachineName":"DESKTOP-HPJE5SK","ThreadId":7}
+BCrypt.Net.SaltParseException: Invalid salt version
+   at BCrypt.Net.BCrypt.HashPassword(String inputKey, String salt, Boolean enhancedEntropy, HashType hashType)
+   at BCrypt.Net.BCrypt.Verify(String text, String hash, Boolean enhancedEntropy, HashType hashType)
+   at TaskFlow.Infrastructure.Security.PasswordHasherService.Verify(String password, String passwordHash) in C:\Users\victus\source\repos\TaskFlow\.claude\worktrees\angry-albattani\TaskFlow.Infrastructure\Security\PasswordHasherService.cs:line 14
+   at TaskFlow.Application.Features.Auth.LoginHandler.HandleAsync(String username, String password) in C:\Users\victus\source\repos\TaskFlow\.claude\worktrees\angry-albattani\TaskFlow.Application\Features\Auth\LoginHandler.cs:line 40
+   at TaskFlow.API.Controllers.AuthController.Login(LoginRequestDto request) in C:\Users\victus\source\repos\TaskFlow\.claude\worktrees\angry-albattani\TaskFlow.API\Controllers\AuthController.cs:line 34
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+[2026-04-13 00:10:28.264 +03:00 ERR] Unhandled exception. Method: POST, Path: /api/Auth/login, ExceptionType: SaltParseException {"SourceContext":"TaskFlow.API.Middleware.ExceptionMiddleware","RequestId":"0HNKOQVJV5U56:00000009","RequestPath":"/api/Auth/login","ConnectionId":"0HNKOQVJV5U56","MachineName":"DESKTOP-HPJE5SK","ThreadId":7}
+BCrypt.Net.SaltParseException: Invalid salt version
+   at BCrypt.Net.BCrypt.HashPassword(String inputKey, String salt, Boolean enhancedEntropy, HashType hashType)
+   at BCrypt.Net.BCrypt.Verify(String text, String hash, Boolean enhancedEntropy, HashType hashType)
+   at TaskFlow.Infrastructure.Security.PasswordHasherService.Verify(String password, String passwordHash) in C:\Users\victus\source\repos\TaskFlow\.claude\worktrees\angry-albattani\TaskFlow.Infrastructure\Security\PasswordHasherService.cs:line 14
+   at TaskFlow.Application.Features.Auth.LoginHandler.HandleAsync(String username, String password) in C:\Users\victus\source\repos\TaskFlow\.claude\worktrees\angry-albattani\TaskFlow.Application\Features\Auth\LoginHandler.cs:line 40
+   at TaskFlow.API.Controllers.AuthController.Login(LoginRequestDto request) in C:\Users\victus\source\repos\TaskFlow\.claude\worktrees\angry-albattani\TaskFlow.API\Controllers\AuthController.cs:line 34
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at TaskFlow.API.Middleware.ExceptionMiddleware.InvokeAsync(HttpContext context) in C:\Users\victus\source\repos\TaskFlow\.claude\worktrees\angry-albattani\TaskFlow.API\Middleware\ExceptionMiddleware.cs:line 42
+[2026-04-13 00:11:37.628 +03:00 INF] Executed DbCommand (5ms) [Parameters=[@__username_0='?' (Size = 100)], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Users] AS [u]
+        WHERE [u].[Username] = @__username_0) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END {"EventId":{"Id":20101,"Name":"Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted"},"SourceContext":"Microsoft.EntityFrameworkCore.Database.Command","ActionId":"20ea01f0-299c-4566-8e7f-48ff68a0b0b7","ActionName":"TaskFlow.API.Controllers.AuthController.Register (TaskFlow.API)","RequestId":"0HNKOQVJV5U56:0000000B","RequestPath":"/api/Auth/register","ConnectionId":"0HNKOQVJV5U56","MachineName":"DESKTOP-HPJE5SK","ThreadId":5}
+[2026-04-13 00:11:37.635 +03:00 WRN] Registration failed: username already taken. Username: string {"SourceContext":"TaskFlow.Application.Features.Auth.RegisterHandler","ActionId":"20ea01f0-299c-4566-8e7f-48ff68a0b0b7","ActionName":"TaskFlow.API.Controllers.AuthController.Register (TaskFlow.API)","RequestId":"0HNKOQVJV5U56:0000000B","RequestPath":"/api/Auth/register","ConnectionId":"0HNKOQVJV5U56","MachineName":"DESKTOP-HPJE5SK","ThreadId":5}
+[2026-04-13 00:11:37.642 +03:00 INF] HTTP POST /api/Auth/register responded 409 in 77.7867 ms {"SourceContext":"Serilog.AspNetCore.RequestLoggingMiddleware","RequestId":"0HNKOQVJV5U56:0000000B","ConnectionId":"0HNKOQVJV5U56","MachineName":"DESKTOP-HPJE5SK","ThreadId":5}
+[2026-04-13 00:11:48.880 +03:00 INF] Executed DbCommand (3ms) [Parameters=[@__username_0='?' (Size = 100)], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Users] AS [u]
+        WHERE [u].[Username] = @__username_0) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END {"EventId":{"Id":20101,"Name":"Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted"},"SourceContext":"Microsoft.EntityFrameworkCore.Database.Command","ActionId":"20ea01f0-299c-4566-8e7f-48ff68a0b0b7","ActionName":"TaskFlow.API.Controllers.AuthController.Register (TaskFlow.API)","RequestId":"0HNKOQVJV5U56:0000000D","RequestPath":"/api/Auth/register","ConnectionId":"0HNKOQVJV5U56","MachineName":"DESKTOP-HPJE5SK","ThreadId":5}
+[2026-04-13 00:11:49.371 +03:00 INF] Executed DbCommand (2ms) [Parameters=[@p0='?' (Size = 4000), @p1='?' (Size = 50), @p2='?' (Size = 100)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [Users] ([PasswordHash], [Role], [Username])
+OUTPUT INSERTED.[Id]
+VALUES (@p0, @p1, @p2); {"EventId":{"Id":20101,"Name":"Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted"},"SourceContext":"Microsoft.EntityFrameworkCore.Database.Command","ActionId":"20ea01f0-299c-4566-8e7f-48ff68a0b0b7","ActionName":"TaskFlow.API.Controllers.AuthController.Register (TaskFlow.API)","RequestId":"0HNKOQVJV5U56:0000000D","RequestPath":"/api/Auth/register","ConnectionId":"0HNKOQVJV5U56","MachineName":"DESKTOP-HPJE5SK","ThreadId":7}
+[2026-04-13 00:11:49.389 +03:00 INF] User registered successfully. Username: serhat {"SourceContext":"TaskFlow.Application.Features.Auth.RegisterHandler","ActionId":"20ea01f0-299c-4566-8e7f-48ff68a0b0b7","ActionName":"TaskFlow.API.Controllers.AuthController.Register (TaskFlow.API)","RequestId":"0HNKOQVJV5U56:0000000D","RequestPath":"/api/Auth/register","ConnectionId":"0HNKOQVJV5U56","MachineName":"DESKTOP-HPJE5SK","ThreadId":7}
+[2026-04-13 00:11:49.392 +03:00 INF] HTTP POST /api/Auth/register responded 201 in 528.7212 ms {"SourceContext":"Serilog.AspNetCore.RequestLoggingMiddleware","RequestId":"0HNKOQVJV5U56:0000000D","ConnectionId":"0HNKOQVJV5U56","MachineName":"DESKTOP-HPJE5SK","ThreadId":7}
+[2026-04-13 00:12:09.822 +03:00 INF] Executed DbCommand (2ms) [Parameters=[@__username_0='?' (Size = 100)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Username] = @__username_0 {"EventId":{"Id":20101,"Name":"Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted"},"SourceContext":"Microsoft.EntityFrameworkCore.Database.Command","ActionId":"7083bb95-8d8f-491e-978f-70f8c18f8ac4","ActionName":"TaskFlow.API.Controllers.AuthController.Login (TaskFlow.API)","RequestId":"0HNKOQVJV5U56:0000000F","RequestPath":"/api/Auth/login","ConnectionId":"0HNKOQVJV5U56","MachineName":"DESKTOP-HPJE5SK","ThreadId":5}
+[2026-04-13 00:12:10.064 +03:00 INF] Login successful. Username: serhat, TokenExpiresAt: "2026-04-12T22:12:10.0445163Z" {"SourceContext":"TaskFlow.Application.Features.Auth.LoginHandler","ActionId":"7083bb95-8d8f-491e-978f-70f8c18f8ac4","ActionName":"TaskFlow.API.Controllers.AuthController.Login (TaskFlow.API)","RequestId":"0HNKOQVJV5U56:0000000F","RequestPath":"/api/Auth/login","ConnectionId":"0HNKOQVJV5U56","MachineName":"DESKTOP-HPJE5SK","ThreadId":5}
+[2026-04-13 00:12:10.070 +03:00 INF] HTTP POST /api/Auth/login responded 200 in 256.7432 ms {"SourceContext":"Serilog.AspNetCore.RequestLoggingMiddleware","RequestId":"0HNKOQVJV5U56:0000000F","ConnectionId":"0HNKOQVJV5U56","MachineName":"DESKTOP-HPJE5SK","ThreadId":5}
+[2026-04-13 00:12:27.457 +03:00 INF] Executed DbCommand (3ms) [Parameters=[@__userId_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Tasks] AS [t]
+WHERE [t].[UserId] = @__userId_0 {"EventId":{"Id":20101,"Name":"Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted"},"SourceContext":"Microsoft.EntityFrameworkCore.Database.Command","ActionId":"199923d3-5d79-46a4-be37-5b1c9c9b5f23","ActionName":"TaskFlow.API.Controllers.TasksController.GetAll (TaskFlow.API)","RequestId":"0HNKOQVJV5U56:00000011","RequestPath":"/api/Tasks","ConnectionId":"0HNKOQVJV5U56","MachineName":"DESKTOP-HPJE5SK","ThreadId":5}
+[2026-04-13 00:12:27.472 +03:00 INF] Executed DbCommand (3ms) [Parameters=[@__userId_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32), @__p_2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[CreatedAt], [t].[Description], [t].[Status], [t].[Title], [t].[UserId]
+FROM [Tasks] AS [t]
+WHERE [t].[UserId] = @__userId_0
+ORDER BY [t].[CreatedAt] DESC
+OFFSET @__p_1 ROWS FETCH NEXT @__p_2 ROWS ONLY {"EventId":{"Id":20101,"Name":"Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted"},"SourceContext":"Microsoft.EntityFrameworkCore.Database.Command","ActionId":"199923d3-5d79-46a4-be37-5b1c9c9b5f23","ActionName":"TaskFlow.API.Controllers.TasksController.GetAll (TaskFlow.API)","RequestId":"0HNKOQVJV5U56:00000011","RequestPath":"/api/Tasks","ConnectionId":"0HNKOQVJV5U56","MachineName":"DESKTOP-HPJE5SK","ThreadId":7}
+[2026-04-13 00:12:27.480 +03:00 INF] HTTP GET /api/Tasks responded 200 in 124.7615 ms {"SourceContext":"Serilog.AspNetCore.RequestLoggingMiddleware","RequestId":"0HNKOQVJV5U56:00000011","ConnectionId":"0HNKOQVJV5U56","MachineName":"DESKTOP-HPJE5SK","ThreadId":7}
+[2026-04-13 00:12:51.849 +03:00 INF] Executed DbCommand (4ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime2), @p2='?' (Size = 1000), @p3='?' (DbType = Int32), @p4='?' (Size = 200), @p5='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [Tasks] ([Id], [CreatedAt], [Description], [Status], [Title], [UserId])
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5); {"EventId":{"Id":20101,"Name":"Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted"},"SourceContext":"Microsoft.EntityFrameworkCore.Database.Command","ActionId":"a21c2c6e-5379-4407-b099-8304deaa733c","ActionName":"TaskFlow.API.Controllers.TasksController.Create (TaskFlow.API)","RequestId":"0HNKOQVJV5U56:00000013","RequestPath":"/api/Tasks","ConnectionId":"0HNKOQVJV5U56","MachineName":"DESKTOP-HPJE5SK","ThreadId":7}
+[2026-04-13 00:12:51.853 +03:00 INF] Task created. Id: "14ca2102-a806-4a1a-b71f-af1284a7ee3d", Title: Task1 {"SourceContext":"TaskFlow.Application.Features.Tasks.Create.CreateTaskHandler","ActionId":"a21c2c6e-5379-4407-b099-8304deaa733c","ActionName":"TaskFlow.API.Controllers.TasksController.Create (TaskFlow.API)","RequestId":"0HNKOQVJV5U56:00000013","RequestPath":"/api/Tasks","ConnectionId":"0HNKOQVJV5U56","MachineName":"DESKTOP-HPJE5SK","ThreadId":7}
+[2026-04-13 00:12:51.868 +03:00 INF] HTTP POST /api/Tasks responded 201 in 85.2090 ms {"SourceContext":"Serilog.AspNetCore.RequestLoggingMiddleware","RequestId":"0HNKOQVJV5U56:00000013","ConnectionId":"0HNKOQVJV5U56","MachineName":"DESKTOP-HPJE5SK","ThreadId":7}
+[2026-04-13 00:12:55.579 +03:00 INF] Executed DbCommand (5ms) [Parameters=[@__userId_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Tasks] AS [t]
+WHERE [t].[UserId] = @__userId_0 {"EventId":{"Id":20101,"Name":"Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted"},"SourceContext":"Microsoft.EntityFrameworkCore.Database.Command","ActionId":"199923d3-5d79-46a4-be37-5b1c9c9b5f23","ActionName":"TaskFlow.API.Controllers.TasksController.GetAll (TaskFlow.API)","RequestId":"0HNKOQVJV5U56:00000015","RequestPath":"/api/Tasks","ConnectionId":"0HNKOQVJV5U56","MachineName":"DESKTOP-HPJE5SK","ThreadId":5}
+[2026-04-13 00:12:55.585 +03:00 INF] Executed DbCommand (2ms) [Parameters=[@__userId_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32), @__p_2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[CreatedAt], [t].[Description], [t].[Status], [t].[Title], [t].[UserId]
+FROM [Tasks] AS [t]
+WHERE [t].[UserId] = @__userId_0
+ORDER BY [t].[CreatedAt] DESC
+OFFSET @__p_1 ROWS FETCH NEXT @__p_2 ROWS ONLY {"EventId":{"Id":20101,"Name":"Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted"},"SourceContext":"Microsoft.EntityFrameworkCore.Database.Command","ActionId":"199923d3-5d79-46a4-be37-5b1c9c9b5f23","ActionName":"TaskFlow.API.Controllers.TasksController.GetAll (TaskFlow.API)","RequestId":"0HNKOQVJV5U56:00000015","RequestPath":"/api/Tasks","ConnectionId":"0HNKOQVJV5U56","MachineName":"DESKTOP-HPJE5SK","ThreadId":7}
+[2026-04-13 00:12:55.590 +03:00 INF] HTTP GET /api/Tasks responded 200 in 21.5481 ms {"SourceContext":"Serilog.AspNetCore.RequestLoggingMiddleware","RequestId":"0HNKOQVJV5U56:00000015","ConnectionId":"0HNKOQVJV5U56","MachineName":"DESKTOP-HPJE5SK","ThreadId":7}
