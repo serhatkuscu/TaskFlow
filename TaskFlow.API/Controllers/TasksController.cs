@@ -5,7 +5,9 @@ using TaskFlow.Application.DTOs.Task;
 using TaskFlow.Application.Features.Tasks.Create;
 using TaskFlow.Application.Features.Tasks.Get;
 using TaskFlow.Application.Features.Tasks.GetById;
+using TaskFlow.Application.Features.Tasks.Delete;
 using TaskFlow.Application.Features.Tasks.Update;
+using TaskFlow.Application.Features.Tasks.UpdateStatus;
 
 namespace TaskFlow.API.Controllers;
 
@@ -14,21 +16,27 @@ namespace TaskFlow.API.Controllers;
 [Authorize]
 public class TasksController : ControllerBase
 {
-    private readonly CreateTaskHandler   _createTaskHandler;
-    private readonly GetAllTasksHandler  _getAllTasksHandler;
-    private readonly GetTaskByIdHandler  _getTaskByIdHandler;
-    private readonly UpdateTaskHandler   _updateTaskHandler;
+    private readonly CreateTaskHandler         _createTaskHandler;
+    private readonly GetAllTasksHandler        _getAllTasksHandler;
+    private readonly GetTaskByIdHandler        _getTaskByIdHandler;
+    private readonly UpdateTaskHandler         _updateTaskHandler;
+    private readonly DeleteTaskHandler         _deleteTaskHandler;
+    private readonly UpdateTaskStatusHandler   _updateTaskStatusHandler;
 
     public TasksController(
-        CreateTaskHandler  createTaskHandler,
-        GetAllTasksHandler getAllTasksHandler,
-        GetTaskByIdHandler getTaskByIdHandler,
-        UpdateTaskHandler  updateTaskHandler)
+        CreateTaskHandler        createTaskHandler,
+        GetAllTasksHandler       getAllTasksHandler,
+        GetTaskByIdHandler       getTaskByIdHandler,
+        UpdateTaskHandler        updateTaskHandler,
+        DeleteTaskHandler        deleteTaskHandler,
+        UpdateTaskStatusHandler  updateTaskStatusHandler)
     {
-        _createTaskHandler  = createTaskHandler;
-        _getAllTasksHandler  = getAllTasksHandler;
-        _getTaskByIdHandler = getTaskByIdHandler;
-        _updateTaskHandler  = updateTaskHandler;
+        _createTaskHandler        = createTaskHandler;
+        _getAllTasksHandler        = getAllTasksHandler;
+        _getTaskByIdHandler       = getTaskByIdHandler;
+        _updateTaskHandler        = updateTaskHandler;
+        _deleteTaskHandler        = deleteTaskHandler;
+        _updateTaskStatusHandler  = updateTaskStatusHandler;
     }
 
     [HttpPost]
@@ -59,6 +67,26 @@ public class TasksController : ControllerBase
         return result.IsFailure
             ? ToErrorResponse(result.Error!)
             : Ok(result.Value);
+    }
+
+    [HttpPatch("{id:guid}/status")]
+    public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] UpdateTaskStatusRequest request)
+    {
+        var result = await _updateTaskStatusHandler.HandleAsync(id, request);
+
+        return result.IsFailure
+            ? ToErrorResponse(result.Error!)
+            : Ok(result.Value);
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var result = await _deleteTaskHandler.HandleAsync(id);
+
+        return result.IsFailure
+            ? ToErrorResponse(result.Error!)
+            : NoContent();
     }
 
     [HttpGet]

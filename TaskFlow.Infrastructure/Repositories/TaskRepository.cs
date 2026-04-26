@@ -28,6 +28,12 @@ public class TaskRepository : ITaskRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task DeleteAsync(TaskItem task)
+    {
+        _context.Tasks.Remove(task);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<TaskItem?> GetByIdAsync(Guid id, int userId)
     {
         return await _context.Tasks
