@@ -11,7 +11,9 @@ using TaskFlow.Application.Interfaces.Services;
 using TaskFlow.Application.Features.Tasks.Create;
 using TaskFlow.Application.Features.Tasks.Get;
 using TaskFlow.Application.Features.Tasks.GetById;
+using TaskFlow.Application.Features.Tasks.Delete;
 using TaskFlow.Application.Features.Tasks.Update;
+using TaskFlow.Application.Features.Tasks.UpdateStatus;
 using TaskFlow.Application.Validators;
 using TaskFlow.Infrastructure.DependencyInjection;
 
@@ -70,11 +72,21 @@ try
         });
     });
 
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowFrontend", policy =>
+            policy.WithOrigins("http://localhost:3000")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod());
+    });
+
     builder.Services.AddInfrastructure(builder.Configuration);
     builder.Services.AddScoped<CreateTaskHandler>();
     builder.Services.AddScoped<GetAllTasksHandler>();
     builder.Services.AddScoped<GetTaskByIdHandler>();
     builder.Services.AddScoped<UpdateTaskHandler>();
+    builder.Services.AddScoped<DeleteTaskHandler>();
+    builder.Services.AddScoped<UpdateTaskStatusHandler>();
     builder.Services.AddScoped<RegisterHandler>();
     builder.Services.AddScoped<LoginHandler>();
 
@@ -130,6 +142,8 @@ try
         options.MessageTemplate =
             "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
     });
+
+    app.UseCors("AllowFrontend");
 
     app.UseHttpsRedirection();
 

@@ -1,0 +1,22 @@
+[2026-04-24 19:02:25.495 +03:00 INF] Now listening on: http://localhost:5008 {"EventId":{"Id":14,"Name":"ListeningOnAddress"},"SourceContext":"Microsoft.Hosting.Lifetime","MachineName":"DESKTOP-HPJE5SK","ThreadId":1}
+[2026-04-24 19:02:25.516 +03:00 INF] Application started. Press Ctrl+C to shut down. {"SourceContext":"Microsoft.Hosting.Lifetime","MachineName":"DESKTOP-HPJE5SK","ThreadId":1}
+[2026-04-24 19:02:25.516 +03:00 INF] Hosting environment: Development {"SourceContext":"Microsoft.Hosting.Lifetime","MachineName":"DESKTOP-HPJE5SK","ThreadId":1}
+[2026-04-24 19:02:25.516 +03:00 INF] Content root path: C:\Users\victus\source\repos\TaskFlow\.claude\worktrees\angry-albattani\TaskFlow.API {"SourceContext":"Microsoft.Hosting.Lifetime","MachineName":"DESKTOP-HPJE5SK","ThreadId":1}
+[2026-04-24 19:02:58.269 +03:00 WRN] Failed to determine the https port for redirect. {"EventId":{"Id":3,"Name":"FailedToDeterminePort"},"SourceContext":"Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware","RequestId":"0HNL23BL1B3MP:00000003","RequestPath":"/api/Auth/login","ConnectionId":"0HNL23BL1B3MP","MachineName":"DESKTOP-HPJE5SK","ThreadId":11}
+[2026-04-24 19:02:59.287 +03:00 INF] Executed DbCommand (44ms) [Parameters=[@__username_0='?' (Size = 100)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Username] = @__username_0 {"EventId":{"Id":20101,"Name":"Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted"},"SourceContext":"Microsoft.EntityFrameworkCore.Database.Command","ActionId":"458509ea-5e83-4d94-a7ba-d68710ce2cf9","ActionName":"TaskFlow.API.Controllers.AuthController.Login (TaskFlow.API)","RequestId":"0HNL23BL1B3MP:00000003","RequestPath":"/api/Auth/login","ConnectionId":"0HNL23BL1B3MP","MachineName":"DESKTOP-HPJE5SK","ThreadId":11}
+[2026-04-24 19:02:59.995 +03:00 INF] Login successful. Username: serhat, TokenExpiresAt: "2026-04-24T17:02:59.9838361Z" {"SourceContext":"TaskFlow.Application.Features.Auth.LoginHandler","ActionId":"458509ea-5e83-4d94-a7ba-d68710ce2cf9","ActionName":"TaskFlow.API.Controllers.AuthController.Login (TaskFlow.API)","RequestId":"0HNL23BL1B3MP:00000003","RequestPath":"/api/Auth/login","ConnectionId":"0HNL23BL1B3MP","MachineName":"DESKTOP-HPJE5SK","ThreadId":11}
+[2026-04-24 19:03:00.005 +03:00 INF] HTTP POST /api/Auth/login responded 200 in 1736.9445 ms {"SourceContext":"Serilog.AspNetCore.RequestLoggingMiddleware","RequestId":"0HNL23BL1B3MP:00000003","ConnectionId":"0HNL23BL1B3MP","MachineName":"DESKTOP-HPJE5SK","ThreadId":11}
+[2026-04-24 19:03:14.159 +03:00 INF] Executed DbCommand (9ms) [Parameters=[@__userId_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Tasks] AS [t]
+WHERE [t].[UserId] = @__userId_0 {"EventId":{"Id":20101,"Name":"Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted"},"SourceContext":"Microsoft.EntityFrameworkCore.Database.Command","ActionId":"ef0c6603-645e-4fed-aa2f-c22682022105","ActionName":"TaskFlow.API.Controllers.TasksController.GetAll (TaskFlow.API)","RequestId":"0HNL23BL1B3MP:00000004","RequestPath":"/api/Tasks","ConnectionId":"0HNL23BL1B3MP","MachineName":"DESKTOP-HPJE5SK","ThreadId":9}
+[2026-04-24 19:03:14.175 +03:00 INF] Executed DbCommand (7ms) [Parameters=[@__userId_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32), @__p_2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[CreatedAt], [t].[Description], [t].[Status], [t].[Title], [t].[UserId]
+FROM [Tasks] AS [t]
+WHERE [t].[UserId] = @__userId_0
+ORDER BY [t].[CreatedAt] DESC
+OFFSET @__p_1 ROWS FETCH NEXT @__p_2 ROWS ONLY {"EventId":{"Id":20101,"Name":"Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted"},"SourceContext":"Microsoft.EntityFrameworkCore.Database.Command","ActionId":"ef0c6603-645e-4fed-aa2f-c22682022105","ActionName":"TaskFlow.API.Controllers.TasksController.GetAll (TaskFlow.API)","RequestId":"0HNL23BL1B3MP:00000004","RequestPath":"/api/Tasks","ConnectionId":"0HNL23BL1B3MP","MachineName":"DESKTOP-HPJE5SK","ThreadId":9}
+[2026-04-24 19:03:14.187 +03:00 INF] HTTP GET /api/Tasks responded 200 in 139.0296 ms {"SourceContext":"Serilog.AspNetCore.RequestLoggingMiddleware","RequestId":"0HNL23BL1B3MP:00000004","ConnectionId":"0HNL23BL1B3MP","MachineName":"DESKTOP-HPJE5SK","ThreadId":9}

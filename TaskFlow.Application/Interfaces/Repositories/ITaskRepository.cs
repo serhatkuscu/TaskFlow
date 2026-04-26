@@ -9,4 +9,5 @@ public interface ITaskRepository
     Task<(List<TaskItem> Items, int TotalCount)> GetAllAsync(PaginationQuery query, int userId);
     Task<TaskItem?> GetByIdAsync(Guid id, int userId);
     Task UpdateAsync(TaskItem task);
+    Task DeleteAsync(TaskItem task);
 }
